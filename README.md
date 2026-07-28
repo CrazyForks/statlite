@@ -4,11 +4,16 @@ A tiny self-hosted metrics dashboard for small servers.
 
 ![StatLite dashboard](docs/images/dashboard.png)
 
-StatLite starts with an opinionated Spring Boot Actuator backend for small self-hosted deployments: local SQLite, raw samples only, simple charts, localhost dashboard by default, systemd-friendly, and no Prometheus/Grafana stack required.
+StatLite supports Spring Boot Actuator and the lightweight StatLite Metrics JSON format for small applications that need basic health, traffic, latency, CPU, and runtime memory monitoring without a full observability stack. It uses local SQLite, raw samples only, simple charts, a localhost dashboard by default, and remains systemd-friendly.
 
-**StatLite is not a Prometheus/Grafana replacement.** It is a small production-support tool for one-person / small-team self-hosted apps where Spring Boot Actuator already exposes enough useful data, but raw metric endpoints are too awkward to inspect manually.
+**StatLite is not a Prometheus/Grafana replacement.** It is a small production-support tool for one-person / small-team self-hosted apps that need a focused dashboard for supported application integrations or StatLite self-monitoring.
 
 Learn how to set up [lightweight Spring Boot monitoring without Prometheus and Grafana](https://pvrlabs.xyz/articles/lightweight-spring-boot-monitoring.html).
+
+Supported target types are `spring` (Spring Boot Actuator), `statlite-metrics`
+(the fixed `statlite-metrics/v1` JSON profile), and `statlite-health` (StatLite
+self-monitoring). The legacy `statlite` value remains an alias for
+`statlite-health`.
 
 ## Quick Start
 
@@ -33,6 +38,7 @@ See `examples/` for config templates and a demo app:
 | `examples/actuator.yaml` | Spring Boot Actuator (single target) |
 | `examples/statlite.yaml` | Another StatLite instance (self-monitoring) |
 | `examples/spring-actuator-demo/` | Standalone Spring Boot demo app for StatLite monitoring |
+| `examples/python-fastapi-demo/` | Runnable FastAPI app exposing StatLite Metrics v1 |
 
 ### Installed binary
 
@@ -84,7 +90,7 @@ Process health semantics:
 * Target poll failures appear under `statlite.polling` and do **not** mark the process unhealthy.
 * If the local SQLite store fails its health check, `/healthz` reports `status: "error"` and HTTP 503.
 
-`type: "statlite"` targets are for StatLite self-monitoring only. They are not a general stable metrics protocol for other applications.
+`type: "statlite-health"` targets are for StatLite self-monitoring only; `type: "statlite"` remains a compatibility alias. For application integrations, use `spring` or the fixed `statlite-metrics` profile. StatLite Metrics is not a general metrics protocol.
 
 ## API stability
 
@@ -99,7 +105,7 @@ StatLite is early and intentionally limited:
 * **Raw samples only** — no derived rollups or downsampling. Query-time delta computation is used for counters.
 * **No alerts** — dashboard-only. No alert manager, no notifications.
 * **No dashboard auth** — see [Dashboard access](#dashboard-access) for safe deployment options.
-* **Spring Boot Actuator-first** — other metric backends (Prometheus, custom endpoints) are not supported in the MVP.
+* **Focused integrations** — arbitrary metric endpoints, Prometheus/OpenMetrics, labels, and custom dashboards are not supported in the MVP.
 * **Credential handling** — use environment variables where possible; plaintext YAML credentials remain supported and should be restricted with `chmod 600`.
 * **Dashboard CDN assets** — Chart.js and fonts may load from external CDNs. The backend is a single binary; full dashboard rendering still depends on those external frontend assets for now. Vendoring them into the binary is a post-MVP item.
 
