@@ -11,9 +11,8 @@ StatLite supports Spring Boot Actuator and the lightweight StatLite Metrics JSON
 Learn how to set up [lightweight Spring Boot monitoring without Prometheus and Grafana](https://pvrlabs.xyz/articles/lightweight-spring-boot-monitoring.html).
 
 Supported target types are `spring` (Spring Boot Actuator), `statlite-metrics`
-(the fixed `statlite-metrics/v1` JSON profile), and `statlite-health` (StatLite
-self-monitoring). The legacy `statlite` value remains an alias for
-`statlite-health`.
+(the canonical fixed `statlite-metrics/v1` JSON profile), and `host` (local
+host resources).
 
 See [StatLite Metrics v1](docs/statlite-metrics-v1.md) for the application
 producer contract.
@@ -30,7 +29,7 @@ go build -o statlite ./cmd/statlite
 ./statlite
 ```
 
-Open http://127.0.0.1:9090 — StatLite loads root `statlite.yaml` and monitors itself via `/healthz`.
+Open http://127.0.0.1:9090 — StatLite loads root `statlite.yaml` and monitors itself via `/statlite/metrics`.
 
 The first self-monitor poll may fail briefly before the HTTP server is ready. That is expected; the dashboard should become healthy on the next poll rather than treating that initial failure as a permanent problem.
 
@@ -93,10 +92,10 @@ statlite --version
 Process health semantics:
 
 * Top-level `status` and the HTTP status code describe **StatLite itself**, not whether monitored targets are healthy.
-* Target poll failures appear under `statlite.polling` and do **not** mark the process unhealthy.
+* Monitored-target poll failures do **not** mark the process unhealthy.
 * If the local SQLite store fails its health check, `/healthz` reports `status: "error"` and HTTP 503.
 
-`type: "statlite-health"` targets are for StatLite self-monitoring only; `type: "statlite"` remains a compatibility alias. For application integrations, use `spring` or the fixed `statlite-metrics` profile. StatLite Metrics is not a general metrics protocol.
+`type: "statlite-metrics"` targets use StatLite’s canonical fixed profile. For application integrations, use `spring` or the fixed `statlite-metrics` profile. StatLite Metrics is not a general metrics protocol.
 
 ## API stability
 
