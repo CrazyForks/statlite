@@ -4,15 +4,20 @@ A tiny self-hosted metrics dashboard for small servers.
 
 ![StatLite dashboard](docs/images/dashboard.png)
 
-StatLite supports Spring Boot Actuator and the lightweight StatLite Metrics JSON format for small applications that need basic health, traffic, latency, CPU, and runtime memory monitoring without a full observability stack. It uses local SQLite, raw samples only, simple charts, a localhost dashboard by default, and remains systemd-friendly.
+StatLite supports Spring Boot Actuator and the lightweight StatLite Metrics
+JSON profile for small applications that need basic health, traffic, latency,
+CPU, and runtime memory monitoring without a full observability stack. It uses
+local SQLite, raw samples only, simple charts, a localhost dashboard by
+default, and remains systemd-friendly.
 
 **StatLite is not a Prometheus/Grafana replacement.** It is a small production-support tool for one-person / small-team self-hosted apps that need a focused dashboard for supported application integrations or StatLite self-monitoring.
 
 Learn how to set up [lightweight Spring Boot monitoring without Prometheus and Grafana](https://pvrlabs.xyz/articles/lightweight-spring-boot-monitoring.html).
 
-Supported target types are `spring` (Spring Boot Actuator), `statlite-metrics`
-(the canonical fixed `statlite-metrics/v1` JSON profile), and `host` (local
-host resources).
+Supported target types are `spring` (Spring Boot Actuator) and
+`statlite-metrics` (the canonical fixed `statlite-metrics/v1` JSON profile).
+`statlite-metrics` can also include optional host CPU, memory, and disk data.
+StatLite includes this local host view in its own profile.
 
 See [StatLite Metrics v1](docs/statlite-metrics-v1.md) for the application
 producer contract.

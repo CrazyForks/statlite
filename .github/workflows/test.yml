@@ -30,5 +30,8 @@ jobs:
       - name: Run dashboard JavaScript unit tests
         run: node --test internal/dashboard/static/dashboard.test.js
 
+      - name: Run FastAPI helper unit tests
+        run: python3 -m unittest examples/python-fastapi-demo/test_statlite_metrics.py
+
       - name: Run Go tests
         run: go test ./...
