@@ -18,6 +18,9 @@ self-monitoring). The legacy `statlite` value remains an alias for
 See [StatLite Metrics v1](docs/statlite-metrics-v1.md) for the application
 producer contract.
 
+See [Product and architecture](docs/product.md) for StatLite’s scope, design
+principles, and normalized collection model.
+
 ## Quick Start
 
 From a clone:
