@@ -31,6 +31,4 @@ jobs:
         run: node --test internal/dashboard/static/dashboard.test.js
 
       - name: Run Go tests
-        env:
-          STATLITE_SKIP_DASHBOARD_JAVASCRIPT_TEST: "1"
         run: go test ./...
