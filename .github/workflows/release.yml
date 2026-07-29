@@ -36,6 +36,14 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+
+      - name: Run dashboard JavaScript unit tests
+        run: node --test internal/dashboard/static/dashboard.test.js
+
       - name: Build release archive
         env:
           CGO_ENABLED: 0
