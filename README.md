@@ -15,6 +15,9 @@ Supported target types are `spring` (Spring Boot Actuator), `statlite-metrics`
 self-monitoring). The legacy `statlite` value remains an alias for
 `statlite-health`.
 
+See [StatLite Metrics v1](docs/statlite-metrics-v1.md) for the application
+producer contract.
+
 ## Quick Start
 
 From a clone:
