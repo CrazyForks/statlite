@@ -2,7 +2,7 @@
 
 A tiny self-hosted metrics dashboard for small servers.
 
-![StatLite dashboard](docs/images/dashboard.png)
+![StatLite example dashboard](docs/images/dashboard.webp)
 
 StatLite supports Spring Boot Actuator and the lightweight StatLite Metrics
 JSON profile for small applications that need basic health, traffic, latency,
