@@ -1,58 +1,59 @@
 # StatLite
 
-A tiny self-hosted metrics dashboard for small servers.
+A tiny metrics dashboard for one-person and small-team self-hosted
+applications.
+
+StatLite supports Spring Boot Actuator and StatLite Metrics applications. It
+stores focused health, traffic, latency, CPU, memory, and optional host metrics
+in local SQLite without requiring Prometheus or Grafana.
+
+**StatLite is not a Prometheus/Grafana replacement.**
 
 ![StatLite example dashboard](docs/images/dashboard.webp)
 
-StatLite supports Spring Boot Actuator and the lightweight StatLite Metrics
-JSON profile for small applications that need basic health, traffic, latency,
-CPU, and runtime memory monitoring without a full observability stack. It uses
-local SQLite, raw samples only, simple charts, a localhost dashboard by
-default, and remains systemd-friendly.
-
-**StatLite is not a Prometheus/Grafana replacement.** It is a small production-support tool for one-person / small-team self-hosted apps that need a focused dashboard for supported application integrations or StatLite self-monitoring.
-
 Learn how to set up [lightweight Spring Boot monitoring without Prometheus and Grafana](https://pvrlabs.xyz/articles/lightweight-spring-boot-monitoring.html).
-
-Supported target types are `spring` (Spring Boot Actuator) and
-`statlite-metrics` (the canonical fixed `statlite-metrics/v1` JSON profile).
-`statlite-metrics` can also include optional host CPU, memory, and disk data.
-StatLite includes this local host view in its own profile.
-
-See [StatLite Metrics v1](docs/statlite-metrics-v1.md) for the application
-producer contract.
-
-See [Product and architecture](docs/product.md) for StatLite’s scope, design
-principles, and normalized collection model.
 
 ## Quick Start
 
-From a clone:
+### Docker
+
+```bash
+docker run --rm \
+  -p 127.0.0.1:9090:9090 \
+  ghcr.io/pvrlabs/statlite:latest
+```
+
+Open <http://127.0.0.1:9090>. The default container monitors StatLite itself.
+
+See [Docker](docs/docker.md) for local builds, storage, access guidance, and
+application examples.
+
+### Build from source
 
 ```bash
 go build -o statlite ./cmd/statlite
 ./statlite
 ```
 
-Open http://127.0.0.1:9090 — StatLite loads root `statlite.yaml` and monitors itself via `/statlite/metrics`.
+Open <http://127.0.0.1:9090>. StatLite loads `statlite.yaml` from the current
+directory and monitors itself through `/statlite/metrics`.
 
-The first self-monitor poll may fail briefly before the HTTP server is ready. That is expected; the dashboard should become healthy on the next poll rather than treating that initial failure as a permanent problem.
+Edit `statlite.yaml` for the default single-target setup, or start from
+`examples/multi-target.yaml` for multiple targets in one instance.
 
-Edit `statlite.yaml` for the default single-target setup, or start from `examples/multi-target.yaml` if you want multiple targets in one instance.
-
-See `examples/` for config templates and a demo app:
+See `examples/` for configuration templates and runnable demo applications:
 
 | Path | Description |
 |------|-------------|
-| `examples/multi-target.yaml` | Generic multi-target starter (illustrative only) |
-| `examples/actuator.yaml` | Spring Boot Actuator (single target) |
-| `examples/statlite.yaml` | Another StatLite instance (self-monitoring) |
-| `examples/spring-actuator-demo/` | Standalone Spring Boot demo app for StatLite monitoring |
-| `examples/python-fastapi-demo/` | Runnable FastAPI app exposing StatLite Metrics v1 |
+| `examples/multi-target.yaml` | Generic multi-target starter |
+| `examples/actuator.yaml` | Spring Boot Actuator target |
+| `examples/statlite.yaml` | StatLite self-monitoring target |
+| `examples/spring-actuator-demo/` | Standalone Spring Boot demo application |
+| `examples/python-fastapi-demo/` | Runnable FastAPI application exposing StatLite Metrics v1 |
 
 ### Installed binary
 
-If StatLite is already on your `PATH` (release installer or Homebrew):
+If StatLite is already on your `PATH` through a release installer or Homebrew:
 
 ```bash
 cp examples/actuator.yaml ./statlite.yaml   # or create your own config
@@ -60,7 +61,19 @@ cp examples/actuator.yaml ./statlite.yaml   # or create your own config
 statlite --config ./statlite.yaml
 ```
 
-Default config path is `statlite.yaml` in the current working directory when `--config` is omitted.
+The default config path is `statlite.yaml` in the current working directory.
+
+## Supported integrations
+
+- `spring`: Spring Boot Actuator
+- `statlite-metrics`: fixed `statlite-metrics/v1` JSON profile
+- StatLite self-monitoring through its own `/statlite/metrics` endpoint
+
+See [StatLite Metrics v1](docs/statlite-metrics-v1.md) for the application
+producer contract.
+
+See [Product and architecture](docs/product.md) for StatLite’s scope, design
+principles, and normalized collection model.
 
 ## Config
 
@@ -70,21 +83,39 @@ Default config path is `statlite.yaml` in the current working directory when `--
 ./statlite --config examples/actuator.yaml
 ```
 
-Prefer environment variables for Actuator credentials, for example `username: "${STATLITE_ACTUATOR_USERNAME}"` and `password: "${STATLITE_ACTUATOR_PASSWORD}"`. StatLite expands `$VAR` and `${VAR}` across the entire config once at startup; restart it after changing a value. Plaintext credentials still work, but restrict that config file with `chmod 600` on a server. Credentials are never rendered in the dashboard or API responses. See [docs/configuration.md](docs/configuration.md) for escaping literal `${` syntax and other expansion details.
+Prefer environment variables for Actuator credentials:
 
-Details (targets, Basic Auth, storage, polling, self-monitoring, retention): [docs/configuration.md](docs/configuration.md).
+```yaml
+auth:
+  type: "basic"
+  username: "${STATLITE_ACTUATOR_USERNAME}"
+  password: "${STATLITE_ACTUATOR_PASSWORD}"
+```
+
+StatLite expands `$VAR` and `${VAR}` across the config once at startup.
+Plaintext credentials remain supported, but restrict that config file with
+`chmod 600` on a server. Credentials are never rendered in the dashboard or
+API responses. See [configuration](docs/configuration.md) for config fields,
+escaping literal `${` syntax, and other details.
 
 ## Deployment
 
-The binary is self-contained. See [docs/install.md](docs/install.md) for user-level installation and [docs/systemd.md](docs/systemd.md) for systemd server provisioning. Installers and package managers install **only the binary** — they do not create config, initialize storage, install units, or start services.
+The binary is self-contained. See [Installation](docs/install.md) and
+[systemd deployment](docs/systemd.md) for installation and server provisioning.
+Installers and package managers install only the binary. They do not create
+config files, initialize storage, install units, or start services.
 
 ### Dashboard access
 
-StatLite does not include built-in dashboard/API authentication yet.
+StatLite does not include built-in dashboard or API authentication.
 
-By default, examples bind the server to `127.0.0.1:9090` so the dashboard is reachable only from the local machine. For remote access, use an SSH tunnel, VPN, firewall-restricted private network, or an authenticated reverse proxy.
+By default, examples bind the server to `127.0.0.1:9090`, so the dashboard is
+reachable only from the local machine. For remote access, use an SSH tunnel,
+VPN, firewall-restricted private network, or an authenticated reverse proxy.
 
-You may bind to `0.0.0.0:9090` if you intentionally want StatLite to listen on all interfaces, but do this only when access is protected externally. Without external protection, anyone who can reach the port can view dashboard/API data such as target names and operational metrics.
+You may bind to `0.0.0.0:9090` when access is protected externally. Without
+external protection, anyone who can reach the port can view dashboard and API
+data such as target names and operational metrics.
 
 ## Version and health
 
@@ -96,28 +127,28 @@ statlite --version
 
 Process health semantics:
 
-* Top-level `status` and the HTTP status code describe **StatLite itself**, not whether monitored targets are healthy.
-* Monitored-target poll failures do **not** mark the process unhealthy.
-* If the local SQLite store fails its health check, `/healthz` reports `status: "error"` and HTTP 503.
-
-`type: "statlite-metrics"` targets use StatLite’s canonical fixed profile. For application integrations, use `spring` or the fixed `statlite-metrics` profile. StatLite Metrics is not a general metrics protocol.
+- Top-level `status` and the HTTP status code describe **StatLite itself**, not whether monitored targets are healthy.
+- Monitored-target poll failures do **not** mark the process unhealthy.
+- If the local SQLite store fails its health check, `/healthz` reports `status: "error"` and HTTP 503.
 
 ## API stability
 
-`/api/*` is early/internal and **not yet a stable public API**. Fields and routes may change without a compatibility guarantee.
+`/api/*` is early and internal, and is not yet a stable public API. Fields and
+routes may change without a compatibility guarantee.
 
-Missing optional metrics may appear as `null` (or be omitted from charts) and should degrade cleanly rather than failing the whole dashboard.
+Missing optional metrics may appear as `null` or be omitted from charts. They
+should degrade cleanly rather than failing the whole dashboard.
 
-## Known Limitations (MVP)
+## Current limitations
 
 StatLite is early and intentionally limited:
 
-* **Raw samples only** — no derived rollups or downsampling. Query-time delta computation is used for counters.
-* **No alerts** — dashboard-only. No alert manager, no notifications.
-* **No dashboard auth** — see [Dashboard access](#dashboard-access) for safe deployment options.
-* **Focused integrations** — arbitrary metric endpoints, Prometheus/OpenMetrics, labels, and custom dashboards are not supported in the MVP.
-* **Credential handling** — use environment variables where possible; plaintext YAML credentials remain supported and should be restricted with `chmod 600`.
-* **Dashboard CDN assets** — Chart.js and fonts may load from external CDNs. The backend is a single binary; full dashboard rendering still depends on those external frontend assets for now. Vendoring them into the binary is a post-MVP item.
+- **Raw samples only:** no derived rollups or downsampling. Query-time delta computation is used for counters.
+- **No alerts:** dashboard only. No alert manager or notifications.
+- **No dashboard auth:** see [Dashboard access](#dashboard-access) for safe deployment options.
+- **Focused integrations:** arbitrary metric endpoints, Prometheus/OpenMetrics, labels, and custom dashboards are not supported in the MVP.
+- **Credential handling:** use environment variables where possible. Plaintext YAML credentials remain supported and should be restricted with `chmod 600`.
+- **Dashboard CDN assets:** Chart.js and fonts may load from external CDNs. The backend is a single binary, but full dashboard rendering still depends on those external frontend assets for now.
 
 ## License
 
