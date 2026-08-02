@@ -49,7 +49,7 @@ See `examples/` for configuration templates and runnable demo applications:
 | `examples/actuator.yaml` | Spring Boot Actuator target |
 | `examples/statlite.yaml` | StatLite self-monitoring target |
 | `examples/spring-actuator-demo/` | Standalone Spring Boot demo application |
-| `examples/python-fastapi-demo/` | Runnable FastAPI application exposing StatLite Metrics v1 |
+| `examples/python-fastapi-demo/` | Runnable FastAPI demo and copyable integration reference for existing applications |
 
 ### Installed binary
 
@@ -67,6 +67,7 @@ The default config path is `statlite.yaml` in the current working directory.
 
 - `spring`: Spring Boot Actuator
 - `statlite-metrics`: fixed `statlite-metrics/v1` JSON profile
+- **Python / FastAPI:** use the copyable [FastAPI integration example](examples/python-fastapi-demo/) to expose StatLite Metrics v1.
 - StatLite self-monitoring through its own `/statlite/metrics` endpoint
 
 See [StatLite Metrics v1](docs/statlite-metrics-v1.md) for the application
