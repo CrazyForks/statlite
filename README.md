@@ -12,6 +12,8 @@ in SQLite.
 
 ![StatLite example dashboard](docs/images/dashboard.webp)
 
+Learn how to set up [lightweight Spring Boot monitoring without Prometheus and Grafana](https://pvrlabs.xyz/articles/lightweight-spring-boot-monitoring.html).
+
 ## Try it
 
 ```bash
@@ -45,7 +47,7 @@ targets:
 ```
 
 See [Configuration](docs/configuration.md) for all settings and [`examples/`](examples/)
-for Spring Boot, FastAPI, self-monitoring, and multi-target configurations.
+for Spring Boot, Python/FastAPI, self-monitoring, and multi-target configurations.
 
 > [!WARNING]
 > StatLite has no built-in dashboard or API authentication. Review the
