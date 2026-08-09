@@ -37,11 +37,13 @@ jobs:
           cache: true
 
       - name: Set up Node
+        if: matrix.goos == 'linux' && matrix.goarch == 'amd64'
         uses: actions/setup-node@v4
         with:
           node-version: "22.14.0"
 
       - name: Run dashboard JavaScript unit tests
+        if: matrix.goos == 'linux' && matrix.goarch == 'amd64'
         run: node --test internal/dashboard/static/dashboard.test.js
 
       - name: Build release archive
