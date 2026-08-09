@@ -49,7 +49,7 @@ targets:
 See [Configuration](docs/configuration.md) for all settings and [`examples/`](examples/)
 for Spring Boot, Python/FastAPI, self-monitoring, and multi-target configurations.
 
-> [!WARNING]
+> [!IMPORTANT]
 > StatLite has no built-in dashboard or API authentication. Review the
 > [server and access guidance](docs/configuration.md#server) before exposing it
 > remotely.
