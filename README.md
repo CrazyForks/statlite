@@ -1,5 +1,9 @@
 # StatLite
 
+[![GitHub stars](https://img.shields.io/github/stars/PVRLabs/statlite?style=flat)](https://github.com/PVRLabs/statlite/stargazers)
+[![GitHub release](https://img.shields.io/github/v/release/PVRLabs/statlite)](https://github.com/PVRLabs/statlite/releases)
+[![License](https://img.shields.io/github/license/PVRLabs/statlite)](LICENSE)
+
 A lightweight, self-hosted metrics dashboard with a small memory and operational
 footprint, designed for applications running on VPSs and small servers. A single
 Go binary monitors Spring Boot applications through Actuator and other
